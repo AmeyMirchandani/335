@@ -6,12 +6,11 @@ const char* nameOfPeripheral = "Halo-Controller";
 const char* uuidOfService = "0000181a-0000-1000-8000-00805f9b34fb";
 
 BLEService sensorDataService(uuidOfService);
-BLEByteCharacteristic gyroXChar("00002AA1-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
-BLEByteCharacteristic gyroYChar("00002AA2-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
-BLEByteCharacteristic gyroZChar("00002AA3-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
+BLEByteCharacteristic pitchChar("00002AA1-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
+BLEByteCharacteristic rollChar("00002AA2-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 BLEByteCharacteristic proxChar("00002AA4-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 // Sensor Data
-float gX, gY, Gz;
+float pitch, roll;
 float prox;
 
 void setup() {
@@ -31,16 +30,15 @@ void setup() {
   startBLE();
   BLE.setLocalName(nameOfPeripheral);
   BLE.setAdvertisedService(sensorDataService);
-  sensorDataService.addCharacteristic(gyroXChar);
-  sensorDataService.addCharacteristic(gyroYChar);
-  sensorDataService.addCharacteristic(gyroZChar);
+  sensorDataService.addCharacteristic(pitchChar);
+  sensorDataService.addCharacteristic(rollChar);
   sensorDataService.addCharacteristic(proxChar);
   BLE.addService(sensorDataService);
   
   BLE.setEventHandler(BLEConnected, onBLEConnected);
   BLE.setEventHandler(BLEDisconnected, onBLEDisconnected);
 
-  Serial.println(proxChar.writeValue(255));
+  proxChar.writeValue(255);
   BLE.advertise();
 
   Serial.println("Peripheral advertising info: ");
@@ -50,14 +48,14 @@ void setup() {
   Serial.println(BLE.address());
   Serial.print("Service UUID: ");
   Serial.println(sensorDataService.uuid());
-  Serial.print("gyroXChar UUID: ");
-  Serial.println(gyroXChar.uuid());
-  Serial.print("gyroYChar UUID: ");
-  Serial.println(gyroYChar.uuid());
-  Serial.print("gyroZChar UUID: ");
-  Serial.println(gyroZChar.uuid());
+  Serial.print("pitchChar UUID: ");
+  Serial.println(pitchChar.uuid());
+  Serial.print("rollChar UUID: ");
+  Serial.println(rollChar.uuid());
+  Serial.print("proxChar UUID: ");
+  Serial.println(proxChar.uuid());
   
-  Serial.println("Bluetooth device active, waiting for connections...");
+  Serial.println("\nBluetooth device active, waiting for connections...");
 }
 
 void loop() {
@@ -75,9 +73,21 @@ void loop() {
           proxChar.writeValue(p);
           Serial.print("New Proximity: ");
           Serial.println(p);
+          prox = p;
         }
-        prox = p;
       }
+
+      float x, y, z;
+      if (IMU.accelerationAvailable()) 
+      {
+        IMU.readAcceleration(x, y, z);
+        int pitch = atan2(-x, z) * 180 / M_PI;
+        int roll = atan2(-y, z) * 180 / M_PI;
+        //int yaw = 180.0*atan2(magy, magx) / PI; //broken
+        Serial.print(pitch);
+        Serial.print('\t');
+        Serial.println(roll);
+    }
     }
   }
   /*
