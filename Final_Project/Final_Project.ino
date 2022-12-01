@@ -1,5 +1,5 @@
 #include <ArduinoBLE.h>
-#include "Arduino_BMI270_BMM150.h"
+#include <Arduino_LSM9DS1.h>
 #include <Arduino_APDS9960.h>
 
 const char* nameOfPeripheral = "Halo-Controller";
@@ -65,24 +65,25 @@ void loop() {
   {
     while(central.connected())
     {
+      
       if(APDS.proximityAvailable())
       {
         int p = APDS.readProximity();
         if((p <= 100 && prox > 100) || (p > 100 && prox <= 100))
         {
           proxChar.writeValue(p);
-          Serial.print("New Proximity: ");
-          Serial.println(p);
+          //Serial.print("New Proximity: ");
+          //Serial.println(p);
           prox = p;
         }
       }
-
+      
       float x, y, z;
       if (IMU.accelerationAvailable()) 
       {
         IMU.readAcceleration(x, y, z);
-        int pitch = atan2(-x, z) * 180 / M_PI;
-        int roll = atan2(-y, z) * 180 / M_PI;
+        pitch = atan2(-x, z) * 180 / M_PI;
+        roll = atan2(-y, z) * 180 / M_PI;
         //int yaw = 180.0*atan2(magy, magx) / PI; //broken
         Serial.print(pitch);
         Serial.print('\t');
