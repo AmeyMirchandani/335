@@ -22,3 +22,12 @@ Or follow the run commands in terminal:
 
 
 Ctrl + shift for interpreter, type Python: Select interpreter. Select pyArd virtual environment.
+
+
+After that, open virtual enviroment and pip install mouse and keyboard:
+
+- pyArd/Scripts/activate   
+
+- pip install mouse
+
+- pip install keyboard
