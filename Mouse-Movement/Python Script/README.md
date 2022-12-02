@@ -1,7 +1,7 @@
-To get data.py to run, follow this tutorial and install:
+To get data.py to run, follow this tutorial:
 https://www.youtube.com/watch?v=dpQmAafRsbg
 
-Run commands in terminal:
+Or follow the run commands in terminal:
 
 py -3.9 -m venv pyArd
 
