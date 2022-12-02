@@ -3,21 +3,21 @@ https://www.youtube.com/watch?v=dpQmAafRsbg
 
 Or follow the run commands in terminal:
 
-py -3.9 -m venv pyArd
+- py -3.9 -m venv pyArd
 
-pyArd/Scripts/activate
+- pyArd/Scripts/activate
 
-pip install pyserial
+- pip install pyserial
 
-pip install vpython
+- pip install vpython
 
-python 
+- python 
 
-import serial
+- import serial
 
-from vypython import *
+- from vypython import *
 
-quit()
+- quit()
 
 
 
