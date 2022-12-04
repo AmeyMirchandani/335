@@ -3,9 +3,9 @@ import bleak
 import time
 import keyboard
 import mouse
+import struct
 
 target_device = "Halo-Controller"
-#global pitch, roll
 
 async def main():    
     
@@ -27,10 +27,15 @@ async def main():
 
                 services = client.services
                 proxChar = services.get_characteristic("00002AA4-0000-1000-8000-00805f9b34fb")
+                gyroXChar = services.get_characteristic("00002AA3-0000-1000-8000-00805f9b34fb")
+                gyroYChar = services.get_characteristic("00002AA5-0000-1000-8000-00805f9b34fb")
+                gyroZChar = services.get_characteristic("00002AA6-0000-1000-8000-00805f9b34fb")
                 pitchChar = services.get_characteristic("00002AA1-0000-1000-8000-00805f9b34fb")
                 rollChar = services.get_characteristic("00002AA2-0000-1000-8000-00805f9b34fb")
 
                 await client.start_notify(proxChar, proxCallback)
+                await client.start_notify(gyroXChar, gyroXCallback)
+                await client.start_notify(pitchChar, pitchCallback)
                 
                 '''
                 proxData = await client.read_gatt_char(proxChar)
@@ -49,9 +54,12 @@ def printAvailableServicesInfo(services):
             print(f"Characteristic UUID: {chars.uuid}")
 
 def pitchCallback(sender, data: bytearray):
-    global pitch
-    data = int.from_bytes(data, "little") 
-    ## NEXT TO IMPLEMENT
+    data = int.from_bytes(data, "little", signed=True)
+    print(data)
+
+def gyroXCallback(sender, data: bytearray):
+    data = struct.unpack("f", data)
+    print(data[0])
 
 def proxCallback(sender, data: bytearray):
     keyboard.send("f") #MUST FIX TO INCLUDE LEFT CLICK TOGGLE
