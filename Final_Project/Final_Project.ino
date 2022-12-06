@@ -92,7 +92,7 @@ void loop() {
           prox = p;
         }
       }
-      /*
+
       float x, y, z;
       if (IMU.gyroscopeAvailable()) {
         IMU.readGyroscope(x, y, z);
@@ -113,8 +113,7 @@ void loop() {
           gyroZ = z;
         }
       }
-      */
-      float x, y, z;
+
       if (IMU.accelerationAvailable()) {
         IMU.readAcceleration(x, y, z);
         int currPitch = atan2(-x, z) * 180 / M_PI;

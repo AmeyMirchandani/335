@@ -55,7 +55,7 @@ def printAvailableServicesInfo(services):
 
 def pitchCallback(sender, data: bytearray):
     data = int.from_bytes(data, "little", signed=True)
-    print(data)
+    #print(data)
 
 def gyroXCallback(sender, data: bytearray):
     data = struct.unpack("f", data)
