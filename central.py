@@ -33,16 +33,15 @@ async def main():
 
                 services = client.services
                 proxChar = services.get_characteristic("00002AA4-0000-1000-8000-00805f9b34fb")
-                gyroXChar = services.get_characteristic("00002AA3-0000-1000-8000-00805f9b34fb")
                 gyroYChar = services.get_characteristic("00002AA5-0000-1000-8000-00805f9b34fb")
                 gyroZChar = services.get_characteristic("00002AA6-0000-1000-8000-00805f9b34fb")
-                pitchChar = services.get_characteristic("00002AA1-0000-1000-8000-00805f9b34fb")
                 rollChar = services.get_characteristic("00002AA2-0000-1000-8000-00805f9b34fb")
                 gestureChar = services.get_characteristic("00002AA7-0000-1000-8000-00805f9b34fb")
 
                 #await client.start_notify(proxChar, proxCallback)
                 #await client.start_notify(gyroXChar, gyroXCallback)
-                #await client.start_notify(pitchChar, pitchCallback)
+                await client.start_notify(gyroYChar, gyroYCallback)
+                await client.start_notify(rollChar, rollCallback)
                 await client.start_notify(gestureChar, gestureCallback)
                 
                 '''
@@ -51,7 +50,7 @@ async def main():
                 print(f"Proximity Value: {proxData}")
                 '''
 
-                await asyncio.sleep(20)
+                await asyncio.sleep(100)
             break
 
 def printAvailableServicesInfo(services):
@@ -70,13 +69,14 @@ def gestureCallback(sender, data: bytearray):
     if key != previously_pressed_key: #if same key was not pressed
         pressKey(key) #press new key
 
-def pitchCallback(sender, data: bytearray):
+def rollCallback(sender, data: bytearray):
     data = int.from_bytes(data, "little", signed=True)
-    print(data)
+    if data not in range(-9, 9):
+        mouse.move(data, 0, absolute=False, duration=.0225)
 
-def gyroXCallback(sender, data: bytearray):
+def gyroYCallback(sender, data: bytearray):
     data = struct.unpack("f", data)
-    print(data[0])
+    mouse.move(0, -data[0], absolute=False, duration=0)
 
 def proxCallback(sender, data: bytearray):
     global mousePressed
@@ -91,38 +91,38 @@ def pressKey(key):
     global currently_pressed_key
     if key == 0:
         #kbd.press("w")
-        k.press("shift")
+        k.press("w")
         currently_pressed_key = 0
     elif key == 1:
         #kbd.press("s")
-        k.press("alt")
+        k.press("s")
         currently_pressed_key = 1
     elif key == 2:
         #kbd.press("a")
-        k.press("left ctrl")
+        k.press("a")
         currently_pressed_key = 2
     elif key == 3:
         #kbd.press("d")
-        k.press("right ctrl")
+        k.press("d")
         currently_pressed_key = 3
 
 def releaseKey(key):
     global currently_pressed_key
     if key == 0:
         #kbd.release("w")
-        k.release("shift")
+        k.release("w")
         currently_pressed_key = -1
     elif key == 1:
         #kbd.release("s")
-        k.release("alt")
+        k.release("s")
         currently_pressed_key = -1
     elif key == 2:
         #kbd.release("a")
-        k.release("left ctrl")
+        k.release("a")
         currently_pressed_key = -1
     elif key == 3:
         #kbd.release("d")
-        k.release("right ctrl")
+        k.release("d")
         currently_pressed_key = -1
 
 if __name__ == "__main__":

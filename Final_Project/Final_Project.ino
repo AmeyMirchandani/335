@@ -131,6 +131,7 @@ void loop() {
         {
           rollChar.writeValue(currRoll);
           roll = currRoll;
+          Serial.println(roll);
         }
       }
 
