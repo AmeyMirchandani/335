@@ -3,13 +3,13 @@ import bleak
 import time
 import mouse
 import struct
-from pynput import keyboard
-from pynput.keyboard import Controller
+#from pynput import keyboard
+#from pynput.keyboard import Controller
 import keyboard as k
 
 target_device = "Halo-Controller"
 
-kbd = Controller()
+#kbd = Controller()
 mousePressed = False
 currently_pressed_key = -1
 
