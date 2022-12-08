@@ -62,8 +62,11 @@ def printAvailableServicesInfo(services):
 def gestureCallback(sender, data: bytearray):
     key = int.from_bytes(data, "little")
 
+    previously_pressed_key = currently_pressed_key
     releaseKey(currently_pressed_key) #release currently pressed key
-    pressKey(key) #press new key
+
+    if key != previously_pressed_key: #if same key was not pressed
+        pressKey(key) #press new key
 
 def pitchCallback(sender, data: bytearray):
     data = int.from_bytes(data, "little", signed=True)
@@ -77,24 +80,34 @@ def proxCallback(sender, data: bytearray):
     keyboard.send("f") #MUST FIX TO INCLUDE LEFT CLICK TOGGLE
 
 def pressKey(key):
+    global currently_pressed_key
     if key == 0:
         kbd.press("w")
-    if key == 1:
+        currently_pressed_key = 0
+    elif key == 1:
         kbd.press("s")
-    if key == 2:
+        currently_pressed_key = 1
+    elif key == 2:
         kbd.press("a")
-    if key == 3:
+        currently_pressed_key = 2
+    elif key == 3:
         kbd.press("d")
+        currently_pressed_key = 3
 
 def releaseKey(key):
+    global currently_pressed_key
     if key == 0:
         kbd.release("w")
-    if key == 1:
+        currently_pressed_key = -1
+    elif key == 1:
         kbd.release("s")
-    if key == 2:
+        currently_pressed_key = -1
+    elif key == 2:
         kbd.release("a")
-    if key == 3:
+        currently_pressed_key = -1
+    elif key == 3:
         kbd.release("d")
+        currently_pressed_key = -1
 
 if __name__ == "__main__":
     asyncio.run(main())
