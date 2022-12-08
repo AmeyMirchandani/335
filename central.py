@@ -5,10 +5,12 @@ import mouse
 import struct
 from pynput import keyboard
 from pynput.keyboard import Controller
+import keyboard as k
 
 target_device = "Halo-Controller"
 
 kbd = Controller()
+mousePressed = False
 currently_pressed_key = -1
 
 async def main():    
@@ -77,36 +79,50 @@ def gyroXCallback(sender, data: bytearray):
     print(data[0])
 
 def proxCallback(sender, data: bytearray):
-    keyboard.send("f") #MUST FIX TO INCLUDE LEFT CLICK TOGGLE
+    global mousePressed
+    if mousePressed == False:
+        mouse.press(button="left")
+        mousePressed = True
+    else:
+        mouse.release(button="left")
+        mousePressed = False
 
 def pressKey(key):
     global currently_pressed_key
     if key == 0:
-        kbd.press("w")
+        #kbd.press("w")
+        k.press("shift")
         currently_pressed_key = 0
     elif key == 1:
-        kbd.press("s")
+        #kbd.press("s")
+        k.press("alt")
         currently_pressed_key = 1
     elif key == 2:
-        kbd.press("a")
+        #kbd.press("a")
+        k.press("left ctrl")
         currently_pressed_key = 2
     elif key == 3:
-        kbd.press("d")
+        #kbd.press("d")
+        k.press("right ctrl")
         currently_pressed_key = 3
 
 def releaseKey(key):
     global currently_pressed_key
     if key == 0:
-        kbd.release("w")
+        #kbd.release("w")
+        k.release("shift")
         currently_pressed_key = -1
     elif key == 1:
-        kbd.release("s")
+        #kbd.release("s")
+        k.release("alt")
         currently_pressed_key = -1
     elif key == 2:
-        kbd.release("a")
+        #kbd.release("a")
+        k.release("left ctrl")
         currently_pressed_key = -1
     elif key == 3:
-        kbd.release("d")
+        #kbd.release("d")
+        k.release("right ctrl")
         currently_pressed_key = -1
 
 if __name__ == "__main__":
