@@ -1,11 +1,15 @@
 import asyncio
 import bleak
 import time
-import keyboard
 import mouse
 import struct
+from pynput import keyboard
+from pynput.keyboard import Controller
 
 target_device = "Halo-Controller"
+
+kbd = Controller()
+currently_pressed_key = -1
 
 async def main():    
     
@@ -32,10 +36,12 @@ async def main():
                 gyroZChar = services.get_characteristic("00002AA6-0000-1000-8000-00805f9b34fb")
                 pitchChar = services.get_characteristic("00002AA1-0000-1000-8000-00805f9b34fb")
                 rollChar = services.get_characteristic("00002AA2-0000-1000-8000-00805f9b34fb")
+                gestureChar = services.get_characteristic("00002AA7-0000-1000-8000-00805f9b34fb")
 
-                await client.start_notify(proxChar, proxCallback)
-                await client.start_notify(gyroXChar, gyroXCallback)
-                await client.start_notify(pitchChar, pitchCallback)
+                #await client.start_notify(proxChar, proxCallback)
+                #await client.start_notify(gyroXChar, gyroXCallback)
+                #await client.start_notify(pitchChar, pitchCallback)
+                await client.start_notify(gestureChar, gestureCallback)
                 
                 '''
                 proxData = await client.read_gatt_char(proxChar)
@@ -53,9 +59,15 @@ def printAvailableServicesInfo(services):
         for chars in service.characteristics:
             print(f"Characteristic UUID: {chars.uuid}")
 
+def gestureCallback(sender, data: bytearray):
+    key = int.from_bytes(data, "little")
+
+    releaseKey(currently_pressed_key) #release currently pressed key
+    pressKey(key) #press new key
+
 def pitchCallback(sender, data: bytearray):
     data = int.from_bytes(data, "little", signed=True)
-    #print(data)
+    print(data)
 
 def gyroXCallback(sender, data: bytearray):
     data = struct.unpack("f", data)
@@ -63,6 +75,26 @@ def gyroXCallback(sender, data: bytearray):
 
 def proxCallback(sender, data: bytearray):
     keyboard.send("f") #MUST FIX TO INCLUDE LEFT CLICK TOGGLE
+
+def pressKey(key):
+    if key == 0:
+        kbd.press("w")
+    if key == 1:
+        kbd.press("s")
+    if key == 2:
+        kbd.press("a")
+    if key == 3:
+        kbd.press("d")
+
+def releaseKey(key):
+    if key == 0:
+        kbd.release("w")
+    if key == 1:
+        kbd.release("s")
+    if key == 2:
+        kbd.release("a")
+    if key == 3:
+        kbd.release("d")
 
 if __name__ == "__main__":
     asyncio.run(main())

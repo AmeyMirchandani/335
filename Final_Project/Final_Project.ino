@@ -9,12 +9,14 @@ BLEService sensorDataService(uuidOfService);
 BLEByteCharacteristic pitchChar("00002AA1-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 BLEByteCharacteristic rollChar("00002AA2-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 BLEByteCharacteristic proxChar("00002AA4-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
+BLEByteCharacteristic gestureChar("00002AA7-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 BLEFloatCharacteristic gyroXChar("00002AA3-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 BLEFloatCharacteristic gyroYChar("00002AA5-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 BLEFloatCharacteristic gyroZChar("00002AA6-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 // Sensor Data
 int pitch = 0;
 int roll = 0;
+int gesture = -1;
 float gyroX = 0;
 float gyroY = 0;
 float gyroZ = 0;
@@ -43,6 +45,7 @@ void setup() {
   sensorDataService.addCharacteristic(gyroXChar);
   sensorDataService.addCharacteristic(gyroYChar);
   sensorDataService.addCharacteristic(gyroZChar);
+  sensorDataService.addCharacteristic(gestureChar);
   BLE.addService(sensorDataService);
   // Event Handlers
   BLE.setEventHandler(BLEConnected, onBLEConnected);
@@ -130,21 +133,42 @@ void loop() {
           roll = currRoll;
         }
       }
+
+      if (APDS.gestureAvailable()) {
+        int gesture = APDS.readGesture();
+        gestureChar.writeValue(gesture);
+        /*
+        switch (gesture){
+          case GESTURE_UP:
+            if(gesture != 0) { gestureChar.writeValue(0); }
+            gesture = 0;
+            break;
+
+          case GESTURE_DOWN:
+            if(gesture != 1) { gestureChar.writeValue(1); }
+            gesture = 1;
+            break;
+
+          case GESTURE_LEFT:
+            if(gesture != 2) { gestureChar.writeValue(2); }
+            gesture = 2;
+            break;
+
+          case GESTURE_RIGHT:
+            if(gesture != 3) { gestureChar.writeValue(3); }
+            gesture = 3;
+            break;
+
+          default:
+            // ignore
+            break;
+        }
+        */
+      }
     }
   }
 }
 
-  /*
-  if (IMU.gyroscopeAvailable()) {
-    IMU.readGyroscope(x, y, z);
-
-    Serial.print(x);
-    Serial.print('\t');
-    Serial.print(y);
-    Serial.print('\t');
-    Serial.println(z);
-  }
-  */
 
 void startBLE() {
   if (!BLE.begin())
