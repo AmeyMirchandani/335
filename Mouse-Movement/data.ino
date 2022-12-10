@@ -6,15 +6,13 @@ const char* nameOfPeripheral = "Halo-Controller";
 const char* uuidOfService = "0000181a-0000-1000-8000-00805f9b34fb";
 
 BLEService sensorDataService(uuidOfService);
-BLEByteCharacteristic pitchChar("00002AA1-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
-BLEByteCharacteristic rollChar("00002AA2-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
+BLEFloatCharacteristic rollChar("00002AA2-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 BLEByteCharacteristic proxChar("00002AA4-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 BLEByteCharacteristic gestureChar("00002AA7-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 BLEFloatCharacteristic gyroXChar("00002AA3-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 BLEFloatCharacteristic gyroYChar("00002AA5-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 BLEFloatCharacteristic gyroZChar("00002AA6-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 // Sensor Data
-float pitch = 0;
 float roll = 0;
 int gesture = -1;
 float gyroX = 0;
@@ -35,7 +33,6 @@ void setup() {
   startBLE();
   BLE.setLocalName(nameOfPeripheral);
   BLE.setAdvertisedService(sensorDataService);
-  sensorDataService.addCharacteristic(pitchChar);
   sensorDataService.addCharacteristic(rollChar);
   sensorDataService.addCharacteristic(proxChar);
   sensorDataService.addCharacteristic(gyroXChar);
@@ -48,7 +45,6 @@ void setup() {
   BLE.setEventHandler(BLEDisconnected, onBLEDisconnected);
   // Default Values
   proxChar.writeValue(255);
-  pitchChar.writeValue(0);
   gyroXChar.writeValue(0);
   gyroYChar.writeValue(0);
   gyroZChar.writeValue(0);
@@ -100,14 +96,8 @@ void loop() {
 
       if (IMU.accelerationAvailable()) {
         IMU.readAcceleration(x, y, z);
-        float currPitch = atan2(-x, z) * 180 / M_PI;
         float currRoll = atan2(-y, z) * 180 / M_PI;
         //int yaw = 180.0*atan2(magy, magx) / PI; //broken
-        if(currPitch != pitch)
-        {
-          pitchChar.writeValue(currPitch);
-          pitch = currPitch;
-        }
         if(currRoll != roll)
         {
           rollChar.writeValue(currRoll);
