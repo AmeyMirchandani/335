@@ -38,8 +38,8 @@ async def main():
                 rollChar = services.get_characteristic("00002AA2-0000-1000-8000-00805f9b34fb")
                 gestureChar = services.get_characteristic("00002AA7-0000-1000-8000-00805f9b34fb")
 
-                #await client.start_notify(proxChar, proxCallback)
                 #await client.start_notify(gyroXChar, gyroXCallback)
+                #await client.start_notify(proxChar, proxCallback)
                 await client.start_notify(gyroYChar, gyroYCallback)
                 await client.start_notify(rollChar, rollCallback)
                 await client.start_notify(gestureChar, gestureCallback)
@@ -64,10 +64,10 @@ def gestureCallback(sender, data: bytearray):
     key = int.from_bytes(data, "little")
 
     previously_pressed_key = currently_pressed_key
-    releaseKey(currently_pressed_key) #release currently pressed key
+    _releaseKey(currently_pressed_key) #release currently pressed key
 
     if key != previously_pressed_key: #if same key was not pressed
-        pressKey(key) #press new key
+        _pressKey(key) #press new key
 
 def rollCallback(sender, data: bytearray):
     data = int.from_bytes(data, "little", signed=True)
@@ -87,7 +87,7 @@ def proxCallback(sender, data: bytearray):
         mouse.release(button="left")
         mousePressed = False
 
-def pressKey(key):
+def _pressKey(key):
     global currently_pressed_key
     if key == 0:
         #kbd.press("w")
@@ -106,7 +106,7 @@ def pressKey(key):
         k.press("d")
         currently_pressed_key = 3
 
-def releaseKey(key):
+def _releaseKey(key):
     global currently_pressed_key
     if key == 0:
         #kbd.release("w")
