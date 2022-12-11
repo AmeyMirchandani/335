@@ -35,7 +35,8 @@ void setup() {
   if (!APDS.begin()) {
     Serial.println("Error initializing APDS-9960 sensor!");
   }
-  // BLE Setup
+  // BLE Setup -> https://create.arduino.cc/projecthub/sridhar-rajagopal/control-arduino-nano-ble-with-bluetooth-python-331e33?ref=part&ref_id=108462&offset=11
+  //              Lot of code from ^^
   startBLE();
   BLE.setLocalName(nameOfPeripheral);
   BLE.setAdvertisedService(sensorDataService);
@@ -77,7 +78,8 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  // https://rootsaid.com/arduino-ble-example/
+  // basic central connection setup code ^
   BLEDevice central = BLE.central();
   if(central)
   {

@@ -38,6 +38,7 @@ async def main():
                 rollChar = services.get_characteristic("00002AA2-0000-1000-8000-00805f9b34fb")
                 gestureChar = services.get_characteristic("00002AA7-0000-1000-8000-00805f9b34fb")
 
+                # https://ladvien.com/python-serial-terminal-with-arduino-and-bleak/ -> got ideas from the notification code here
                 #await client.start_notify(gyroXChar, gyroXCallback)
                 #await client.start_notify(proxChar, proxCallback)
                 await client.start_notify(gyroYChar, gyroYCallback)
