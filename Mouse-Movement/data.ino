@@ -12,6 +12,8 @@ BLEByteCharacteristic gestureChar("00002AA7-0000-1000-8000-00805f9b34fb", BLERea
 BLEFloatCharacteristic gyroXChar("00002AA3-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 BLEFloatCharacteristic gyroYChar("00002AA5-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
 BLEFloatCharacteristic gyroZChar("00002AA6-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
+BLEByteCharacteristic buttonChar("00002AA8-0000-1000-8000-00805f9b34fb", BLERead | BLENotify);
+
 // Sensor Data
 float roll = 0;
 int gesture = -1;
@@ -19,10 +21,13 @@ float gyroX = 0;
 float gyroY = 0;
 float gyroZ = 0;
 float prox;
+const int buttonPin = 4;
+int buttonState = 0;  
 
 void setup() {
   // Serial Setup
   // Gyro/Accel Setup
+  pinMode(buttonPin, INPUT);
   if (!IMU.begin()) {
     while (1);
   }
@@ -39,6 +44,8 @@ void setup() {
   sensorDataService.addCharacteristic(gyroYChar);
   sensorDataService.addCharacteristic(gyroZChar);
   sensorDataService.addCharacteristic(gestureChar);
+  sensorDataService.addCharacteristic(buttonChar);
+
   BLE.addService(sensorDataService);
   // Event Handlers
   BLE.setEventHandler(BLEConnected, onBLEConnected);
@@ -60,6 +67,7 @@ void loop() {
   {
     while(central.connected())
     {
+      buttonChar.writeValue(digitalRead(buttonPin));
       
       if(APDS.proximityAvailable())
       {
