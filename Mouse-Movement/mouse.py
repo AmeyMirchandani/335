@@ -52,6 +52,9 @@ async def main():
                 gestureChar = services.get_characteristic(
                     "00002AA7-0000-1000-8000-00805f9b34fb"
                 )
+                buttonChar = services.get_characteristic(
+                    "00002AA8-0000-1000-8000-00805f9b34fb"
+                )
 
                 # await client.start_notify(proxChar, proxCallback)
                 await client.start_notify(gyroZChar, gyroZCallback)
@@ -59,6 +62,7 @@ async def main():
                 # await client.start_notify(pitchChar, pitchCallback)
                 await client.start_notify(gestureChar, gestureCallback)
                 await client.start_notify(rollChar, rollCallback)
+                await client.start_notify(buttonChar, buttonCallback)
 
                 """
                 proxData = await client.read_gatt_char(proxChar)
@@ -77,6 +81,10 @@ def printAvailableServicesInfo(services):
         for chars in service.characteristics:
             print(f"Characteristic UUID: {chars.uuid}")
 
+def buttonCallback(sender, data: bytearray):
+    data = int.from_bytes(data, "little")
+    if data == 1:
+        k.press("r")
 
 def gestureCallback(sender, data: bytearray):
     key = int.from_bytes(data, "little")
