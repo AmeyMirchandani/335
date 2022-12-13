@@ -22,7 +22,8 @@ float gyroY = 0;
 float gyroZ = 0;
 float prox;
 const int buttonPin = 4;
-int buttonState = 0;  
+int buttonState = 0;
+int buttonDown = 0;
 
 void setup() {
   // Serial Setup
@@ -67,7 +68,15 @@ void loop() {
   {
     while(central.connected())
     {
-      buttonChar.writeValue(digitalRead(buttonPin));
+      buttonState = digitalRead(buttonPin);
+      if (buttonState == HIGH && !buttonDown) {
+        buttonChar.writeValue(HIGH);
+        buttonDown = 1;
+      }
+      if (buttonState == LOW)
+      {
+        buttonDown = 0;
+      }
       
       if(APDS.proximityAvailable())
       {
