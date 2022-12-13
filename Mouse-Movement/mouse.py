@@ -81,10 +81,11 @@ def printAvailableServicesInfo(services):
         for chars in service.characteristics:
             print(f"Characteristic UUID: {chars.uuid}")
 
+
 def buttonCallback(sender, data: bytearray):
     data = int.from_bytes(data, "little")
-    if data == 1:
-        k.press("r")
+    print(data)
+
 
 def gestureCallback(sender, data: bytearray):
     key = int.from_bytes(data, "little")
@@ -95,6 +96,7 @@ def gestureCallback(sender, data: bytearray):
     if key != previously_pressed_key:  # if same key was not pressed
         pressKey(key)  # press new key
 
+
 def gyroZCallback(sender, data: bytearray):
     data = struct.unpack("f", data)
     mouse.move(-data[0], 0, absolute=False, duration=0)
@@ -103,6 +105,7 @@ def gyroZCallback(sender, data: bytearray):
 def gyroYCallback(sender, data: bytearray):
     data = struct.unpack("f", data)
     mouse.move(0, -data[0], absolute=False, duration=0)
+
 
 def rollCallback(sender, data: bytearray):
     data = struct.unpack("f", data)
