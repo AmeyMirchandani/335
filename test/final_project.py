@@ -13,6 +13,7 @@ target_device = "Halo-Controller"
 # kbd = Controller()
 mousePressed = False
 currently_pressed_key = -1
+toggleButton = 0
 
 async def main():
 
@@ -55,7 +56,7 @@ async def main():
                     "00002AA8-0000-1000-8000-00805f9b34fb"
                 )
 
-                # await client.start_notify(proxChar, proxCallback)
+                await client.start_notify(proxChar, proxCallback)
                 await client.start_notify(gyroZChar, gyroZCallback)
                 await client.start_notify(gyroYChar, gyroYCallback)
                 # await client.start_notify(pitchChar, pitchCallback)
@@ -69,7 +70,8 @@ async def main():
                 print(f"Proximity Value: {proxData}")
                 """
 
-                await asyncio.sleep(100)
+                while True:
+                    await asyncio.sleep(100)
             break
 
 
@@ -82,18 +84,32 @@ def printAvailableServicesInfo(services):
 
 
 def buttonCallback(sender, data: bytearray):
+    global toggleButton
+    
     data = int.from_bytes(data, "little")
-    print(data)
-
+    if not toggleButton:
+        toggleButton = 1
 
 def gestureCallback(sender, data: bytearray):
+    global toggleButton
     key = int.from_bytes(data, "little")
 
-    previously_pressed_key = currently_pressed_key
-    releaseKey(currently_pressed_key)  # release currently pressed key
+    if toggleButton:
+        if key == 0:
+            k.send("e", do_press=True, do_release=True)
+        if key == 1:
+            k.send("r", do_press=True, do_release=True)
+        if key == 2:
+            k.send("q", do_press=True, do_release=True)
+        if key == 3:
+            k.send("z", do_press=True, do_release=True)
+        toggleButton = False
+    else:
+        previously_pressed_key = currently_pressed_key
+        releaseKey(currently_pressed_key)  # release currently pressed key
 
-    if key != previously_pressed_key:  # if same key was not pressed
-        pressKey(key)  # press new key
+        if key != previously_pressed_key:  # if same key was not pressed
+            pressKey(key)  # press new key
 
 
 def gyroZCallback(sender, data: bytearray):
