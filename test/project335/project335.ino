@@ -23,7 +23,6 @@ float gyroZ = 0;
 float prox;
 int buttonState = 0;
 int buttonDown;
-int prev = LOW;
 
 void setup() {
   pinMode(4, INPUT_PULLUP);
