@@ -88,7 +88,9 @@ void loop() {
       buttonState = digitalRead(4);
       if (buttonDown != buttonState) {
         buttonDown = buttonState;
-        buttonChar.writeValue(HIGH);
+        if(buttonState == HIGH){
+          buttonChar.writeValue(HIGH);
+        }
       }
 
       if(APDS.proximityAvailable())
