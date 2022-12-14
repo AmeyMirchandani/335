@@ -21,19 +21,24 @@ float gyroX = 0;
 float gyroY = 0;
 float gyroZ = 0;
 float prox;
-const int buttonPin = 4;
 int buttonState = 0;
-int buttonDown = 0;
+int buttonDown;
+int prev = LOW;
 
 void setup() {
+  pinMode(4, INPUT_PULLUP);
+  buttonDown = digitalRead(4);
   // Serial Setup
+  Serial.begin(9600);
+  // buttonDown state change
   // Gyro/Accel Setup
-  pinMode(buttonPin, INPUT);
   if (!IMU.begin()) {
+    Serial.println("Failed to initialize IMU!");
     while (1);
   }
   // Proximity Sensor Setup
   if (!APDS.begin()) {
+    Serial.println("Error initializing APDS-9960 sensor!");
   }
   // BLE Setup
   startBLE();
@@ -59,6 +64,19 @@ void setup() {
   // Start Advertising
   BLE.advertise();
   // Print Perihperal Info
+  Serial.println("Peripheral advertising info: ");
+  Serial.print("Name: ");
+  Serial.println(nameOfPeripheral);
+  Serial.print("MAC: ");
+  Serial.println(BLE.address());
+  Serial.print("Service UUID: ");
+  Serial.println(sensorDataService.uuid());
+  Serial.print("rollChar UUID: ");
+  Serial.println(rollChar.uuid());
+  Serial.print("proxChar UUID: ");
+  Serial.println(proxChar.uuid());
+  
+  Serial.println("\nBluetooth device active, waiting for connections...");
 }
 
 void loop() {
@@ -68,16 +86,12 @@ void loop() {
   {
     while(central.connected())
     {
-      buttonState = digitalRead(buttonPin);
-      if (buttonState == HIGH && !buttonDown) {
+      buttonState = digitalRead(4);
+      if (buttonDown != buttonState) {
+        buttonDown = buttonState;
         buttonChar.writeValue(HIGH);
-        buttonDown = 1;
       }
-      if (buttonState == LOW)
-      {
-        buttonDown = 0;
-      }
-      
+
       if(APDS.proximityAvailable())
       {
         int p = APDS.readProximity();
@@ -134,12 +148,17 @@ void loop() {
 void startBLE() {
   if (!BLE.begin())
   {
+    Serial.println("starting BLE failed!");
     while (1);
   }
 }
 
 void onBLEConnected(BLEDevice central) {
+  Serial.print("Connected device, central: ");
+  Serial.println(central.address());
 }
 
 void onBLEDisconnected(BLEDevice central) {
+  Serial.print("Disconnected device, central: ");
+  Serial.println(central.address());
 }
